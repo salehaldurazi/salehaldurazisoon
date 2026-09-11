@@ -2369,21 +2369,23 @@ function AlbumGrid({
                             {selectedAlbumForGrid.title}
                           </h3>
                           {/* Sleek RTL flex row for Year, Status Label & Stats */}
-                          <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-foreground/70 flex-wrap mt-0.5">
-                            <span className="inline-flex items-center text-[6px] sm:text-xs font-bold text-zinc-400/80 bg-foreground/5 px-1.5 sm:px-2 py-0.5 rounded-full border border-foreground/10 shrink-0">{selectedAlbumForGrid.year}</span>
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mt-1" dir="rtl">
+                            <span className="inline-flex items-center justify-center h-6 px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[10px] sm:text-xs font-semibold leading-none text-zinc-400/80 shrink-0">
+                              {selectedAlbumForGrid.year}
+                            </span>
                             {selectedAlbumForGrid.status_label && (
-                              <span className="inline-flex items-center bg-primary/20 text-primary px-1.5 sm:px-2 py-0.5 rounded-full font-bold text-[9px] sm:text-[10px] border border-primary/15">
+                              <span className="inline-flex items-center justify-center h-6 px-2.5 rounded-full border border-primary/20 bg-primary/20 text-[10px] sm:text-xs font-semibold leading-none text-primary shrink-0">
                                 {selectedAlbumForGrid.status_label}
                               </span>
                             )}
-                            <div className="flex items-center gap-1.5 text-[9px] sm:text-[11px] text-foreground/50 dark:text-gray-400 bg-foreground/5 border border-foreground/10 px-1.5 sm:px-2 py-0.5 rounded-lg backdrop-blur-sm">
-                              <div className="flex items-center gap-1">
-                                <Headphones className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary opacity-80" />
+                            <div className="inline-flex items-center justify-center h-6 px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[10px] sm:text-xs font-semibold leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-2 shrink-0">
+                              <div className="inline-flex items-center gap-1">
+                                <Headphones className="w-3 h-3 text-primary shrink-0 opacity-80" />
                                 <span>{modalListens.toLocaleString("en-US")}</span>
                               </div>
                               <div className="w-px h-2.5 bg-foreground/15" />
-                              <div className="flex items-center gap-1">
-                                <Download className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary opacity-80" />
+                              <div className="inline-flex items-center gap-1">
+                                <Download className="w-3 h-3 text-primary shrink-0 opacity-80" />
                                 <span>{modalDownloads.toLocaleString("en-US")}</span>
                               </div>
                             </div>
