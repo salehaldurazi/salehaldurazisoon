@@ -149,7 +149,7 @@ export function Contact() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={loading}
-                    className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-xs md:text-sm text-right transition-all text-foreground"
+                    className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-base md:text-sm text-right transition-all text-foreground"
                     dir="rtl"
                   />
                 </div>
@@ -160,7 +160,7 @@ export function Contact() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
-                    className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-xs md:text-sm text-right transition-all text-foreground"
+                    className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-base md:text-sm text-right transition-all text-foreground"
                     dir="rtl"
                   />
                 </div>
@@ -171,7 +171,7 @@ export function Contact() {
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   disabled={loading}
-                  className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-xs md:text-sm text-right transition-all text-foreground"
+                  className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-base md:text-sm text-right transition-all text-foreground"
                   dir="rtl"
                 />
               </div>
@@ -182,7 +182,7 @@ export function Contact() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   disabled={loading}
-                  className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl min-h-[120px] text-xs md:text-sm text-right transition-all resize-none text-foreground"
+                  className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl min-h-[120px] text-base md:text-sm text-right transition-all resize-none text-foreground"
                   dir="rtl"
                 />
               </div>

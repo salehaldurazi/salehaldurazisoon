@@ -299,6 +299,8 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [expandedAlbumId]);
 
+  const isInitialMount = React.useRef(true);
+
   // Reset search query & folder view automatically when activeCategory changes
   useEffect(() => {
     setSearchQuery("");
@@ -306,6 +308,35 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
     setCurrentFolderView(null);
     setExpandedAlbumId(null);
   }, [activeCategory]);
+
+  // Automatic smooth scroll-to-top ONLY when switching categories or navigating folders (NOT when opening/expanding albums)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const scrollToAudioTop = () => {
+      const audioSection = document.getElementById("audio");
+      if (audioSection) {
+        const navOffset = 70; // Navigation bar height offset
+        const elementTop =
+          audioSection.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop);
+        const targetScroll = Math.max(0, elementTop - navOffset);
+
+        window.scrollTo({
+          top: targetScroll,
+          behavior: "smooth",
+        });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    };
+
+    // Small delay to ensure DOM layout stabilizes across mobile and desktop
+    const timer = setTimeout(scrollToAudioTop, 40);
+    return () => clearTimeout(timer);
+  }, [activeCategory, currentFolderView]);
 
   useEffect(() => {
     setVisibleCount(5);
@@ -1064,7 +1095,18 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
    */
   const renderStandaloneTracks = (tracksList: Track[], albumName = "الأدعية") => {
     if (tracksList.length === 0) {
-      if (visibleFolders.length > 0) return null;
+      if (visibleFolders.length > 0 && !currentFolderView) return null;
+      if (currentFolderView) {
+        return (
+          <EmptyState
+            icon={searchQuery ? SearchX : FolderX}
+            title={searchQuery ? "لم يتم العثور على نتائج" : "هذا المجلد فارغ"}
+            description={searchQuery ? `لا توجد قصائد تطابق "${searchQuery}" في هذا المجلد.` : undefined}
+            actionLabel={searchQuery ? "مسح تصفية البحث" : undefined}
+            onAction={searchQuery ? () => setSearchQuery("") : undefined}
+          />
+        );
+      }
       return renderEmptyFallbackUI(activeCategory);
     }
 
@@ -1472,7 +1514,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
               placeholder="ابحث عن ألبوم ، أو قصيدة ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-11 h-12 bg-card/40 border-primary/10 focus:border-primary/40 rounded-full text-sm transition-all backdrop-blur-sm text-right text-foreground"
+              className="pr-11 h-12 bg-card/40 border-primary/10 focus:border-primary/40 rounded-full text-base md:text-sm transition-all backdrop-blur-sm text-right text-foreground"
               dir="rtl"
             />
           </div>
@@ -1643,11 +1685,11 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
                         return (
                           <EmptyState
                             icon={searchQuery ? SearchX : FolderX}
-                            title={searchQuery ? "لم يتم العثور على نتائج" : "المجلد فارغ"}
+                            title={searchQuery ? "لم يتم العثور على نتائج" : "هذا المجلد فارغ"}
                             description={
                               searchQuery
                                 ? `لا توجد ألبومات تطابق "${searchQuery}" في هذا المجلد.`
-                                : "لا توجد ألبومات مضافة في هذا المجلد حالياً."
+                                : undefined
                             }
                             actionLabel={searchQuery ? "مسح تصفية البحث" : undefined}
                             onAction={searchQuery ? () => setSearchQuery("") : undefined}
@@ -1901,20 +1943,6 @@ function AlbumGrid({
       window.removeEventListener("player-state-change", handlePlayerStateChange);
     };
   }, []);
-
-  // Lock background body scroll & touch interactions when Grid view album is expanded to prevent scroll leakage
-  useEffect(() => {
-    if (viewMode === "grid" && expandedAlbumId) {
-      const originalOverflow = document.body.style.overflow;
-      const originalTouchAction = document.body.style.touchAction;
-      document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.touchAction = originalTouchAction;
-      };
-    }
-  }, [viewMode, expandedAlbumId]);
 
   if (albums.length === 0) {
     if (folders && folders.length > 0) {
@@ -2249,7 +2277,7 @@ function AlbumGrid({
 
       {/* Modern Glassmorphic Container & Full-Screen Blurred Backdrop for Grid View Tracklist (Portaled to document.body) */}
       {mounted && createPortal(
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {viewMode === "grid" && selectedAlbumForGrid && (() => {
             const modalListens = selectedAlbumForGrid.tracks
               ? selectedAlbumForGrid.tracks.reduce((sum: number, t: any) => sum + (t.listens_count || 0), 0)
@@ -2258,17 +2286,17 @@ function AlbumGrid({
               ? selectedAlbumForGrid.tracks.reduce((sum: number, t: any) => sum + (t.downloads_count || 0), 0)
               : 0;
 
-            // Dynamic top and bottom boundary offsets for strict viewport isolation (above nav bar z-[110] and audio player z-[160])
+            // Unified vertical spacing: exact 1rem (16px) gap between Album View, Floating Player, and Nav Bar
             const topOffsetClass = "top-20 sm:top-24 md:top-28";
-            let bottomOffsetClass = "bottom-[6.5rem] sm:bottom-[7rem]"; // Stops strictly ABOVE bottom navigation bar (fixed bottom-6)
+            let bottomOffsetClass = "bottom-[6rem]"; // Exact 1rem (16px) gap above bottom navigation bar
 
             if (playerState.isActive) {
               if (playerState.isMinimized) {
-                // Mini player active: lock bottom edge right above mini player bar
-                bottomOffsetClass = "bottom-[10.5rem] sm:bottom-[11.5rem]";
+                // Exact 1rem (16px) gap above minimized audio player
+                bottomOffsetClass = "bottom-[10.5rem]";
               } else {
-                // Full player active: lock bottom edge right above full player bar
-                bottomOffsetClass = "bottom-[14.5rem] sm:bottom-[15.5rem]";
+                // Exact 1rem (16px) gap above expanded audio player
+                bottomOffsetClass = "bottom-[14.5rem]";
               }
             }
 
@@ -2280,20 +2308,16 @@ function AlbumGrid({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="fixed inset-0 w-screen h-screen z-50 bg-black/60 backdrop-blur-md cursor-pointer touch-none overscroll-contain"
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="fixed inset-0 w-screen h-screen z-50 bg-black/65 backdrop-blur-md cursor-pointer touch-none overscroll-contain"
                   onClick={() => setExpandedAlbumId(null)}
                 />
 
-                {/* 2. Expanded Album Card Wrapper (z-[51]) */}
+                {/* 2. Expanded Album Card Wrapper (z-[51]) perfectly matching AudioPlayer max-w-md and px-4 */}
                 <motion.div
                   key="grid-album-card-wrapper"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
                   className={cn(
-                    "fixed inset-x-0 z-[51] flex items-start justify-center px-3 sm:px-4 pointer-events-none transition-all duration-500 ease-in-out overscroll-contain",
+                    "fixed inset-x-0 z-[51] flex items-start justify-center px-4 pointer-events-none overscroll-contain",
                     topOffsetClass,
                     bottomOffsetClass
                   )}
@@ -2301,11 +2325,11 @@ function AlbumGrid({
                 >
                   <motion.div
                     key={`grid-album-modal-${selectedAlbumForGrid.id}`}
-                    initial={{ scale: 0.96, opacity: 0, y: -16 }}
+                    initial={{ scale: 0.97, opacity: 0, y: 12 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.96, opacity: 0, y: -16 }}
-                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="pointer-events-auto relative w-[calc(100vw-1.5rem)] max-w-lg h-auto max-h-full bg-card/95 dark:bg-black/95 border border-primary/20 backdrop-blur-3xl rounded-3xl sm:rounded-[2.2rem] p-3.5 sm:p-6 overflow-hidden flex flex-col text-start transition-all duration-500 ease-in-out overscroll-contain cursor-default"
+                    exit={{ scale: 0.97, opacity: 0, y: 12 }}
+                    transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                    className="pointer-events-auto relative w-full max-w-md h-auto max-h-full bg-card/95 dark:bg-black/95 border border-primary/20 backdrop-blur-3xl rounded-[1.5rem] p-3.5 sm:p-5 overflow-hidden flex flex-col text-start shadow-2xl overscroll-contain cursor-default"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Modal Background Glow */}

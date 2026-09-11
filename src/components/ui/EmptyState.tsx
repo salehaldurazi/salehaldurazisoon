@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export interface EmptyStateProps {
-  /** Lucide React icon to display in the empty state card */
+  /** Lucide React icon to display in the empty state. Defaults to FolderX */
   icon?: LucideIcon;
-  /** Primary title text */
+  /** Primary title text. Defaults to 'هذا المجلد فارغ' */
   title?: string;
-  /** Secondary description text */
+  /** Optional secondary description text */
   description?: string;
   /** Optional action button label */
   actionLabel?: string;
@@ -22,59 +22,60 @@ export interface EmptyStateProps {
 
 export function EmptyState({
   icon: Icon = FolderX,
-  title = "لا توجد عناصر متوفرة",
-  description = "لم نتمكن من العثور على أي عناصر في هذا القسم حالياً.",
+  title = "هذا المجلد فارغ",
+  description,
   actionLabel,
   onAction,
   className,
 }: EmptyStateProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, y: 10 }}
+      initial={{ opacity: 0, scale: 0.96, y: 6 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, y: -10 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      exit={{ opacity: 0, scale: 0.96, y: -6 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "text-center py-14 px-6 rounded-[2.5rem] bg-card/40 border border-primary/15 backdrop-blur-2xl max-w-md mx-auto my-8 space-y-4 shadow-xl shadow-primary/5 text-foreground relative overflow-hidden",
+        "flex flex-col items-center justify-center text-center py-24 sm:py-36 px-4 my-8 max-w-sm mx-auto select-none relative",
         className
       )}
       dir="rtl"
     >
-      {/* Ambient background glow matching dark gold aesthetic */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Soft, delicate ambient gold glow in the center */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 bg-primary/8 rounded-full blur-2xl pointer-events-none" />
 
-      {/* Stylish, modern empty-state icon container */}
-      <div className="relative inline-flex items-center justify-center">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/20 flex items-center justify-center text-primary shadow-inner">
-          <Icon className="w-8 h-8 opacity-90 stroke-[1.5]" />
-        </div>
-        {/* Subtle decorative ring dot */}
-        <div className="absolute -bottom-1 -left-1 w-4 h-4 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping opacity-75" />
-        </div>
+      {/* Daintily scaled-down gold-outlined Folder Icon */}
+      <div className="relative inline-flex items-center justify-center mb-2.5 text-primary">
+        <Icon
+          className="w-7 h-7 sm:w-8 sm:h-8 stroke-[1.2] text-primary/90 drop-shadow-[0_0_12px_rgba(197,160,89,0.3)] transition-transform duration-300 hover:scale-110"
+        />
       </div>
 
-      <div className="space-y-1.5 relative z-10">
-        <h4 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
+      {/* Proportionate, elegant Arabic typography */}
+      <div className="space-y-1 relative z-10">
+        <h4 className="text-xs sm:text-sm font-light tracking-wide text-foreground/75 leading-relaxed">
           {title}
         </h4>
         {description && (
-          <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
+          <p className="text-[10px] sm:text-xs text-foreground/40 leading-relaxed max-w-xs mx-auto font-light">
             {description}
           </p>
         )}
       </div>
 
+      {/* Optional action button (if provided) */}
       {actionLabel && onAction && (
-        <div className="pt-2 relative z-10">
+        <div className="pt-4 relative z-10">
           <button
             onClick={onAction}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary text-xs font-bold transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
+            className="relative group overflow-hidden inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 text-primary text-[11px] font-medium backdrop-blur-md transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
           >
-            <span>{actionLabel}</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+            <span className="relative z-10">{actionLabel}</span>
           </button>
         </div>
       )}
     </motion.div>
   );
 }
+
+

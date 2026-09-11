@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Track {
   id: string | number;
@@ -417,44 +418,36 @@ export function AudioPlayer({
         preload="auto"
       />
 
-      <div
-        className={cn(
-          "w-full max-w-md relative overflow-hidden transition-all duration-500 ease-in-out rounded-[1.5rem]",
-          "bg-card/90 dark:bg-black/90 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)]",
-          isMinimized ? "h-14" : "h-[120px]"
-        )}
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 20 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          height: isMinimized ? 56 : 120,
+        }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{
+          type: "spring",
+          stiffness: 340,
+          damping: 30,
+          mass: 0.8,
+        }}
+        className="w-full max-w-md relative overflow-hidden rounded-[1.5rem] bg-card/90 dark:bg-black/90 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-[transform,height]"
       >
-        {isMinimized ? (
-          <button
-            onClick={() => setIsMinimized(false)}
-            className="absolute inset-0 z-10 flex items-center justify-between px-5 w-full h-full text-right hover:bg-foreground/5 transition-colors group"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="relative w-8 h-8 rounded-xl overflow-hidden shrink-0 border border-primary/20">
-                <Image
-                  src="https://pub-4e74282116ce42688fee67ca11592467.r2.dev/img/cover.webp"
-                  alt="غلاف"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="flex flex-col min-w-0 text-right">
-                <span className="text-[11px] font-bold text-foreground truncate leading-none">
-                  {track.title}
-                </span>
-                <span className="text-[9px] text-primary/70 truncate font-light mt-1">
-                  {albumDisplayName}
-                </span>
-              </div>
-            </div>
-
-            <ChevronUp className="w-4 h-4 text-primary/40 group-hover:text-primary transition-colors" />
-          </button>
-        ) : (
-          <div className="flex flex-col animate-in fade-in duration-500 p-2 h-full justify-between gap-2">
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2.5 text-right min-w-0">
-                <div className="relative w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-primary/30 shadow-2xl">
+        <AnimatePresence mode="wait" initial={false}>
+          {isMinimized ? (
+            <motion.button
+              key="minimized-player"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              onClick={() => setIsMinimized(false)}
+              className="absolute inset-0 z-10 flex items-center justify-between px-5 w-full h-full text-right hover:bg-foreground/5 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="relative w-8 h-8 rounded-xl overflow-hidden shrink-0 border border-primary/20">
                   <Image
                     src="https://pub-4e74282116ce42688fee67ca11592467.r2.dev/img/cover.webp"
                     alt="غلاف"
@@ -462,127 +455,156 @@ export function AudioPlayer({
                     className="object-cover"
                   />
                 </div>
-                <div className="min-w-0 text-right">
-                  <h4 className="text-[12px] font-bold text-foreground truncate leading-tight">
+                <div className="flex flex-col min-w-0 text-right">
+                  <span className="text-[11px] font-bold text-foreground truncate leading-none">
                     {track.title}
-                  </h4>
-                  <p className="text-[9px] text-primary/80 font-medium truncate mt-0.5">
+                  </span>
+                  <span className="text-[9px] text-primary/70 truncate font-light mt-1">
                     {albumDisplayName}
-                  </p>
-                </div>
-              </div>
-
-              {/* أزرار التحكم العلوي: الانتقال للألبوم، التحميل، المشاركة، التصغير، الإغلاق */}
-              <div className="flex items-center gap-0.5">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleGoToAlbum}
-                  className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all"
-                  title="الانتقال إلى الألبوم"
-                >
-                  <Disc className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDownload}
-                  className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all"
-                  title="تنزيل القصيدة"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleShare}
-                  className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all"
-                  title="مشاركة القصيدة"
-                >
-                  <Share2 className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  onClick={() => setIsMinimized(true)}
-                  variant="ghost"
-                  size="icon"
-                  className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all"
-                  title="تصغير"
-                >
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onClose}
-                  className="w-7 h-7 rounded-full text-foreground/30 hover:text-destructive hover:bg-destructive/10 transition-all"
-                  title="إغلاق"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-0">
-              <div className="flex flex-col px-1">
-                <Slider
-                  value={[currentTime]}
-                  max={duration || 100}
-                  step={0.1}
-                  onValueChange={handleSliderChange}
-                  className="cursor-pointer"
-                />
-                <div className="flex items-center justify-between px-0.5 mt-1">
-                  <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
-                    {formatTime(currentTime)}
-                  </span>
-                  <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
-                    {formatTime(duration)}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-4 pb-0.5">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  disabled={!hasNext}
-                  onClick={onNext}
-                  className="text-primary/50 hover:text-primary hover:bg-primary/5 p-0 h-7 w-7 rounded-full transition-all"
-                  title="التالي"
-                >
-                  <SkipForward className="w-3.5 h-3.5 fill-current" />
-                </Button>
+              <ChevronUp className="w-4 h-4 text-primary/40 group-hover:text-primary transition-colors" />
+            </motion.button>
+          ) : (
+            <motion.div
+              key="expanded-player"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="flex flex-col p-2.5 h-full justify-between gap-1.5"
+            >
+              <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2.5 text-right min-w-0">
+                  <div className="relative w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-primary/30 shadow-2xl">
+                    <Image
+                      src="https://pub-4e74282116ce42688fee67ca11592467.r2.dev/img/cover.webp"
+                      alt="غلاف"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 text-right">
+                    <h4 className="text-[12px] font-bold text-foreground truncate leading-tight">
+                      {track.title}
+                    </h4>
+                    <p className="text-[9px] text-primary/80 font-medium truncate mt-0.5">
+                      {albumDisplayName}
+                    </p>
+                  </div>
+                </div>
 
-                <Button
-                  onClick={togglePlay}
-                  className={cn(
-                    "relative group overflow-hidden flex items-center justify-center w-9 h-9 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md transition-all duration-500 hover:border-primary/50 hover:bg-primary/10 cursor-pointer text-primary",
-                    "relative group overflow-hidden flex items-center justify-center w-9 h-9 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md transition-all duration-500 hover:border-primary/50 hover:bg-primary/10 cursor-pointer text-primary"
-                  )}
-                  title={isPlaying ? "إيقاف" : "تشغيل"}
-                >
-                  {isPlaying ? (
-                    <Pause className="w-4 h-4 fill-current" />
-                  ) : (
-                    <Play className="w-4 h-4 fill-current" />
-                  )}
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  disabled={!hasPrevious}
-                  onClick={onPrevious}
-                  className="text-primary/50 hover:text-primary hover:bg-primary/5 p-0 h-7 w-7 rounded-full transition-all"
-                  title="السابق"
-                >
-                  <SkipBack className="w-3.5 h-3.5 fill-current" />
-                </Button>
+                {/* أزرار التحكم العلوي: الانتقال للألبوم، التحميل، المشاركة، التصغير، الإغلاق */}
+                <div className="flex items-center gap-0.5">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleGoToAlbum}
+                    className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    title="الانتقال إلى الألبوم"
+                  >
+                    <Disc className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDownload}
+                    className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    title="تنزيل القصيدة"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleShare}
+                    className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    title="مشاركة القصيدة"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    onClick={() => setIsMinimized(true)}
+                    variant="ghost"
+                    size="icon"
+                    className="w-7 h-7 rounded-full text-foreground/30 hover:text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    title="تصغير"
+                  >
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onClose}
+                    className="w-7 h-7 rounded-full text-foreground/30 hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
+                    title="إغلاق"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-      </div>
+
+              <div className="flex flex-col gap-0">
+                <div className="flex flex-col px-1">
+                  <Slider
+                    value={[currentTime]}
+                    max={duration || 100}
+                    step={0.1}
+                    onValueChange={handleSliderChange}
+                    className="cursor-pointer"
+                  />
+                  <div className="flex items-center justify-between px-0.5 mt-1">
+                    <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
+                      {formatTime(currentTime)}
+                    </span>
+                    <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
+                      {formatTime(duration)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-4 pb-0.5">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={!hasNext}
+                    onClick={onNext}
+                    className="text-primary/50 hover:text-primary hover:bg-primary/5 p-0 h-7 w-7 rounded-full transition-all cursor-pointer"
+                    title="التالي"
+                  >
+                    <SkipForward className="w-3.5 h-3.5 fill-current" />
+                  </Button>
+
+                  <button
+                    onClick={togglePlay}
+                    className="relative group overflow-hidden flex items-center justify-center w-9 h-9 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md transition-all duration-500 hover:border-primary/50 hover:bg-primary/10 cursor-pointer text-primary"
+                    title={isPlaying ? "إيقاف" : "تشغيل"}
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-4 h-4 fill-current" />
+                    ) : (
+                      <Play className="w-4 h-4 fill-current" />
+                    )}
+                  </button>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={!hasPrevious}
+                    onClick={onPrevious}
+                    className="text-primary/50 hover:text-primary hover:bg-primary/5 p-0 h-7 w-7 rounded-full transition-all cursor-pointer"
+                    title="السابق"
+                  >
+                    <SkipBack className="w-3.5 h-3.5 fill-current" />
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

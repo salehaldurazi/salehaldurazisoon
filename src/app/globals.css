@@ -84,6 +84,15 @@
   textarea {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
+
+  /* Prevent mobile Safari and Android auto-zooming on focus by enforcing >=16px font-size on mobile viewports */
+  @media (max-width: 767px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
 }
 
 .scroll-mt-nav {
