@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Image from "next/image";
-import { Youtube, Play, Share2, X, Square, VideoOff } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Youtube, Share2, VideoOff } from "lucide-react";
 
 import { FadeInSection } from "../FadeInSection";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase-js";
-import { cn } from "@/lib/utils";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES & CONSTANTS
@@ -22,6 +19,8 @@ interface VideoRow {
   title?: string | null;
   description?: string | null;
   youtube_url?: string | null;
+  cover_url?: string | null;
+  circular_cover_url?: string | null;
   category?: string | null;
   sub_category?: string | null;
   display_order?: number | null;
@@ -35,9 +34,6 @@ const VIDEO_CATEGORIES = [
 ] as const;
 
 type CategoryKey = (typeof VIDEO_CATEGORIES)[number]["value"];
-
-const CIRCULAR_BUTTON_STYLE =
-  "relative group overflow-hidden flex items-center justify-center w-9 h-9 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md transition-all duration-500 hover:border-primary/50 hover:bg-primary/10 cursor-pointer text-primary shrink-0";
 
 // ─────────────────────────────────────────────────────────────
 // HELPER FUNCTIONS
@@ -110,7 +106,27 @@ export function Videos() {
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeVideoId, setActiveVideoId] = useState<string | number | null>(null);
+
+  const titleRef = useRef<HTMLDivElement | null>(null);
+  const isInitialMount = useRef(true);
+
+  const scrollToTitle = useCallback(() => {
+    if (titleRef.current) {
+      titleRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, []);
+
+  // Smoothly scroll directly to the 'المرئيات' section title on category tab switch
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    scrollToTitle();
+  }, [activeCategory, scrollToTitle]);
 
   const fetchVideos = useCallback(async () => {
     try {
@@ -119,7 +135,7 @@ export function Videos() {
 
       const { data, error: dbError } = await supabase
         .from("videos")
-        .select("id, title, description, youtube_url, category, sub_category, display_order, created_at");
+        .select("*");
 
       if (dbError) {
         console.warn("[Videos] Database fetch error. Using fallback videos:", dbError);
@@ -128,7 +144,7 @@ export function Videos() {
         console.info("[Videos] Database empty. Using fallback videos.");
         setVideos(FALLBACK_VIDEOS);
       } else {
-        setVideos(data);
+        setVideos(data as VideoRow[]);
       }
     } catch (err: any) {
       console.warn("[Videos] Fetch exception caught. Using fallback videos:", err);
@@ -181,19 +197,22 @@ export function Videos() {
   return (
     <section
       id="videos"
-      className="py-24 md:py-32 scroll-mt-nav bg-background relative overflow-hidden"
+      className="py-24 md:py-32 bg-background relative overflow-hidden"
       dir="rtl"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
       <div className="container max-w-6xl px-6 mx-auto relative z-10">
-        <FadeInSection className="text-center mb-10 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-light text-primary">المرئيات</h2>
-          <p className="text-primary uppercase text-xs">قسم خاص للمرئيات</p>
-        </FadeInSection>
+        {/* Pinpointed Section Title Target */}
+        <div ref={titleRef} className="scroll-mt-20 md:scroll-mt-24">
+          <FadeInSection className="text-center mb-10 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-light text-primary">المرئيات</h2>
+            <p className="text-primary uppercase text-xs">قسم خاص للمرئيات</p>
+          </FadeInSection>
+        </div>
 
-        <div className="max-w-3xl mx-auto w-full mt-12">
+        <div className="max-w-4xl mx-auto w-full mt-12">
           {loading ? (
             <LoadingSpinner size={36} strokeWidth={0.8} />
           ) : error ? (
@@ -208,14 +227,14 @@ export function Videos() {
               onValueChange={setActiveCategory}
               className="w-full"
             >
-              {/* Category Filter Tabs */}
-              <div className="flex flex-col items-center w-full mb-8">
+              {/* Category Filter Tabs (Exact match with Audio Library dimensions) */}
+              <div className="max-w-3xl mx-auto w-full mb-8">
                 <TabsList className="w-full bg-muted/50 dark:bg-black/40 backdrop-blur-2xl p-1.5 rounded-full border border-primary/10 h-auto inline-flex items-center gap-1.5 overflow-hidden">
                   {VIDEO_CATEGORIES.map(({ value, label }) => (
                     <TabsTrigger
                       key={value}
                       value={value}
-                      className="flex-1 rounded-full py-2.5 text-[11px] md:text-sm font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
+                      className="flex-1 rounded-full py-2.5 text-[11px] md:text-sm font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-foreground/5 whitespace-nowrap"
                     >
                       {label}
                     </TabsTrigger>
@@ -240,174 +259,96 @@ export function Videos() {
                         description="لا توجد مقاطع فيديو مضافة في هذا القسم حالياً."
                       />
                     ) : (
-                      <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-5" dir="rtl">
+                      /* Auto-Centering Responsive Flex Container: Perfectly centers 1, 2, or 3+ cards */
+                      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5 max-w-4xl mx-auto w-full" dir="rtl">
                         {categoryVideos.map((vid, idx) => {
                           const videoId = extractYouTubeId(vid.youtube_url);
                           const watchUrl =
                             vid.youtube_url ?? (videoId ? `https://www.youtube.com/watch?v=${videoId}` : "#");
-                          const isPlaying = activeVideoId === vid.id;
-                          const embedUrl = videoId
-                            ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
-                            : null;
-                          const thumbnailUrl = videoId
-                            ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+                          
+                          // Custom circular cover or YouTube maxresdefault / hqdefault fallback
+                          const customCover = vid.circular_cover_url || vid.cover_url;
+                          const thumbnailUrl = customCover
+                            ? customCover
+                            : videoId
+                            ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
                             : null;
                           const formattedDate = formatArabicDate(vid.created_at);
 
                           return (
-                            <FadeInSection key={vid.id} delay={idx * 100}>
-                              <Card className="bg-card border border-border dark:border-white/10 hover:border-primary/40 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-2xl md:rounded-3xl dark:shadow-2xl h-full flex flex-col text-right">
-                                <CardContent className="p-0 flex flex-col h-full">
-
-                                  {/* 1. Video Thumbnail / Player Container */}
-                                  <div className="relative aspect-video overflow-hidden bg-black/95">
-                                    <AnimatePresence mode="wait">
-                                      {isPlaying && embedUrl ? (
-                                        <motion.div
-                                          key="player"
-                                          initial={{ opacity: 0, scale: 0.98 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          exit={{ opacity: 0, scale: 0.98 }}
-                                          transition={{ duration: 0.3 }}
-                                          className="w-full h-full relative"
-                                        >
-                                          <iframe
-                                            className="w-full h-full"
-                                            src={embedUrl}
-                                            title={vid.title ?? ""}
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                          />
-                                          {/* Floating Close Button */}
-                                          <button
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              setActiveVideoId(null);
-                                            }}
-                                            className="absolute top-2 left-2 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-black/80 border border-primary/30 text-primary hover:bg-black hover:border-primary transition-all cursor-pointer backdrop-blur-md shadow-lg"
-                                            title="إغلاق التشغيل"
-                                            aria-label="إغلاق الفيديو"
-                                          >
-                                            <X className="w-3.5 h-3.5" />
-                                          </button>
-                                        </motion.div>
-                                      ) : (
-                                        <motion.div
-                                          key="thumbnail"
-                                          initial={{ opacity: 0 }}
-                                          animate={{ opacity: 1 }}
-                                          exit={{ opacity: 0 }}
-                                          transition={{ duration: 0.3 }}
-                                          onClick={() => {
-                                            if (videoId) setActiveVideoId(vid.id);
-                                          }}
-                                          className="relative w-full h-full cursor-pointer group/thumb select-none"
-                                        >
-                                          {thumbnailUrl ? (
-                                            <Image
-                                              src={thumbnailUrl}
-                                              alt={vid.title ?? ""}
-                                              fill
-                                              sizes="(max-width: 768px) 50vw, 50vw"
-                                              referrerPolicy="no-referrer"
-                                              className="object-cover scale-100 group-hover/thumb:scale-105 transition-transform duration-700 ease-out brightness-[0.88] group-hover/thumb:brightness-100"
-                                            />
-                                          ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-600 text-xs">
-                                              رابط يوتيوب غير صالح
-                                            </div>
-                                          )}
-
-                                          {/* Ambient Vignette Gradient */}
-                                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20 transition-opacity duration-500" />
-
-                                          {/* Floating Sub-category Badge (Top-Right) */}
-                                          {vid.sub_category && (
-                                            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/65 dark:bg-black/75 backdrop-blur-xl border border-primary/30 text-primary text-[7.5px] sm:text-[9px] md:text-[10px] font-bold tracking-wide max-w-[90px] sm:max-w-none truncate">
-                                              {vid.sub_category}
-                                            </div>
-                                          )}
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
+                            <FadeInSection key={vid.id} delay={idx * 100} className="shrink-0 flex justify-center">
+                              {/* 100% Seamless Circular Card: Scaled up, zero outer border or drop shadow */}
+                              <div className="w-[155px] sm:w-[185px] md:w-[225px] lg:w-[245px] aspect-square shrink-0 rounded-full overflow-hidden relative group transition-transform duration-500 hover:scale-[1.02] mx-auto">
+                                {/* Cover Image Filling Full Circle */}
+                                {thumbnailUrl ? (
+                                  <Image
+                                    src={thumbnailUrl}
+                                    alt={vid.title ?? ""}
+                                    fill
+                                    unoptimized={!!customCover}
+                                    sizes="(max-width: 640px) 155px, (max-width: 768px) 185px, (max-width: 1024px) 225px, 245px"
+                                    referrerPolicy="no-referrer"
+                                    className="object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out brightness-[0.92] group-hover:brightness-100"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-600 text-xs">
+                                    رابط يوتيوب غير صالح
                                   </div>
+                                )}
 
-                                  {/* 2. Metadata & Circular Action Buttons */}
-                                  <div className="p-3 sm:p-4 md:p-5 flex-1 flex flex-col justify-between">
-                                    <div>
-                                      {formattedDate && (
-                                        <div className="flex items-center justify-start mb-1">
-                                          <span className="text-[9px] sm:text-[10px] font-mono text-foreground/40 dark:text-white/30">
-                                            {formattedDate}
-                                          </span>
-                                        </div>
-                                      )}
+                                {/* Bottom Gradient Overlay (Adaptive Light & Dark Modes) */}
+                                <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-white via-white/85 to-transparent dark:from-black dark:via-black/90 dark:to-transparent flex flex-col justify-end items-center pb-3.5 sm:pb-4 md:pb-5 pt-3 sm:pt-4 px-2.5 sm:px-3.5 md:px-4 text-center z-10">
+                                  {/* 1. Category Badge: Soft semi-transparent frosted style */}
+                                  {vid.sub_category && (
+                                    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm border border-primary/30 text-primary text-[8px] sm:text-[9px] font-semibold mb-1 tracking-wide shadow-sm">
+                                      {vid.sub_category}
+                                    </span>
+                                  )}
 
-                                      <h3 className="text-xs sm:text-base md:text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-snug line-clamp-2 mt-1">
-                                        {vid.title ?? "بدون عنوان"}
-                                      </h3>
+                                  {/* 2. Video Title */}
+                                  <h3
+                                    className="text-[11px] sm:text-xs md:text-sm font-bold text-foreground truncate max-w-[85%] leading-tight group-hover:text-primary transition-colors duration-300"
+                                    title={vid.title ?? ""}
+                                  >
+                                    {vid.title ?? "بدون عنوان"}
+                                  </h3>
 
-                                      {vid.description && (
-                                        <p className="text-[10px] sm:text-xs text-foreground/50 leading-tight sm:leading-relaxed line-clamp-2 mt-1">
-                                          {vid.description}
-                                        </p>
-                                      )}
-                                    </div>
+                                  {/* 3. Year / Metadata */}
+                                  {(formattedDate || vid.description) && (
+                                    <p className="text-[8.5px] sm:text-[9px] md:text-[10px] text-muted-foreground font-light mt-0.5 truncate max-w-[85%]">
+                                      {formattedDate || vid.description}
+                                    </p>
+                                  )}
 
-                                    {/* 3 Centered Circular Action Buttons */}
-                                    <div
-                                      className="mt-3.5 sm:mt-5 flex flex-row items-center justify-center gap-3 sm:gap-5 select-none w-full"
-                                      onClick={(e) => e.stopPropagation()}
+                                  {/* 4. Action Buttons (YouTube & Share Only) */}
+                                  <div
+                                    className="flex items-center justify-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {/* YouTube Button */}
+                                    <a
+                                      href={watchUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 backdrop-blur-md hover:bg-primary/20 dark:hover:bg-primary/30 flex items-center justify-center transition-all cursor-pointer text-primary group/btn"
+                                      title="مشاهدة على يوتيوب"
+                                      aria-label="مشاهدة على يوتيوب"
                                     >
-                                      {/* Watch on YouTube */}
-                                      <a
-                                        href={watchUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={CIRCULAR_BUTTON_STYLE}
-                                        title="مشاهدة على يوتيوب"
-                                        aria-label="مشاهدة على يوتيوب"
-                                      >
-                                        <Youtube strokeWidth={1.5} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                                      </a>
+                                      <Youtube className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary group-hover/btn:scale-110 transition-transform" />
+                                    </a>
 
-                                      {/* Share Video */}
-                                      <button
-                                        onClick={() => handleShare(vid.title, watchUrl)}
-                                        className={CIRCULAR_BUTTON_STYLE}
-                                        title="مشاركة الفيديو"
-                                        aria-label="مشاركة الفيديو"
-                                      >
-                                        <Share2 strokeWidth={1.5} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                                      </button>
-
-                                      {/* Play / Stop In-Place */}
-                                      <button
-                                        onClick={() => {
-                                          if (isPlaying) {
-                                            setActiveVideoId(null);
-                                          } else if (videoId) {
-                                            setActiveVideoId(vid.id);
-                                          }
-                                        }}
-                                        className={cn(
-                                          CIRCULAR_BUTTON_STYLE,
-                                          isPlaying && "bg-destructive/10 dark:bg-destructive/20 border-destructive/40 text-destructive hover:bg-destructive/20 hover:border-destructive/60"
-                                        )}
-                                        title={isPlaying ? "إغلاق التشغيل" : "تشغيل الفيديو"}
-                                        aria-label={isPlaying ? "إغلاق التشغيل" : "تشغيل الفيديو"}
-                                      >
-                                        {isPlaying ? (
-                                          <Square strokeWidth={1.5} className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" />
-                                        ) : (
-                                          <Play strokeWidth={1.5} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-primary/20 translate-x-[-0.5px]" />
-                                        )}
-                                      </button>
-                                    </div>
+                                    {/* Share Button */}
+                                    <button
+                                      onClick={() => handleShare(vid.title, watchUrl)}
+                                      className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 backdrop-blur-md hover:bg-primary/20 dark:hover:bg-primary/30 flex items-center justify-center transition-all cursor-pointer text-primary group/btn"
+                                      title="مشاركة الفيديو"
+                                      aria-label="مشاركة الفيديو"
+                                    >
+                                      <Share2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary group-hover/btn:scale-110 transition-transform" />
+                                    </button>
                                   </div>
-
-                                </CardContent>
-                              </Card>
+                                </div>
+                              </div>
                             </FadeInSection>
                           );
                         })}

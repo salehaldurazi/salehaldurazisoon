@@ -139,68 +139,61 @@ export function Contact() {
 
           {/* Contact Form - Increased Padding and Spacing */}
           <FadeInSection delay={200} className="w-full">
-            <form onSubmit={handleSubmit} className="w-full space-y-5 bg-card/80 dark:bg-card/30 backdrop-blur-3xl p-8 md:p-12 rounded-[3rem] border border-border dark:border-primary/10 text-right relative overflow-hidden group">
-              <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full blur-3xl transition-all duration-700" />
+            <form onSubmit={handleSubmit} className="w-full space-y-4 md:space-y-5 bg-card/80 dark:bg-card/30 backdrop-blur-3xl p-8 md:p-12 rounded-[3rem] border border-border dark:border-primary/10 text-right relative overflow-hidden group">
+              <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full blur-3xl transition-all duration-700 pointer-events-none" />
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs md:text-sm text-foreground/60 leading-relaxed font-light max-w-2xl mx-auto">الإسم</label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
-                    className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-base md:text-sm text-right transition-all text-foreground"
-                    dir="rtl"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs md:text-sm text-foreground/60 leading-relaxed font-light max-w-2xl mx-auto">البريد الإلكتروني</label>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
-                    className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-base md:text-sm text-right transition-all text-foreground"
-                    dir="rtl"
-                  />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs md:text-sm text-foreground/60 leading-relaxed font-light max-w-2xl mx-auto">الموضوع</label>
                 <Input
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="الاسم الكامل"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   disabled={loading}
-                  className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl h-12 text-base md:text-sm text-right transition-all text-foreground"
+                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all outline-none text-foreground"
+                  dir="rtl"
+                />
+                <Input
+                  type="email"
+                  placeholder="البريد الإلكتروني"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all outline-none text-foreground"
                   dir="rtl"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs md:text-sm text-foreground/60 leading-relaxed font-light max-w-2xl mx-auto">الرسالة</label>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  disabled={loading}
-                  className="bg-card/80 dark:bg-background/40 border-border dark:border-primary/5 focus:border-primary/40 rounded-xl min-h-[120px] text-base md:text-sm text-right transition-all resize-none text-foreground"
-                  dir="rtl"
-                />
-              </div>
+              <Input
+                placeholder="موضوع الرسالة"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                disabled={loading}
+                className="h-12 md:h-14 px-6 rounded-full bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all outline-none text-foreground"
+                dir="rtl"
+              />
+
+              <Textarea
+                placeholder="اكتب رسالتك هنا..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                disabled={loading}
+                className="min-h-[140px] md:min-h-[160px] p-5 md:p-6 rounded-[28px] bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all resize-none outline-none text-foreground"
+                dir="rtl"
+              />
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-xl font-bold transition-all uppercase text-[10px] md:text-xs mt-2 flex items-center justify-center"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] h-12 md:h-14 rounded-full font-bold transition-all duration-300 text-xs md:text-sm mt-2 flex items-center justify-center gap-2 group/submit shadow-lg shadow-primary/10 cursor-pointer"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 ml-3 animate-spin" strokeWidth={1} />
-                    جاري الإرسال...
+                    <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+                    <span>جاري الإرسال...</span>
                   </>
                 ) : (
                   <>
-                    <Send className="w-3.5 h-3.5 ml-3" />
-                    إرسال الرسالة
+                    <Send className="w-4 h-4 group-hover/submit:-translate-x-1 transition-transform duration-300" />
+                    <span>إرسال الرسالة</span>
                   </>
                 )}
               </Button>

@@ -101,6 +101,8 @@ interface VideoItem {
   title?: string | null;
   description?: string | null;
   youtube_url?: string | null;
+  cover_url?: string | null;
+  circular_cover_url?: string | null;
   category?: string | null;
   sub_category?: string | null;
   display_order?: number | null;
@@ -309,6 +311,7 @@ export default function AdminDashboard() {
   const [videoTitle, setVideoTitle] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
   const [videoYoutubeUrl, setVideoYoutubeUrl] = useState("");
+  const [videoCoverUrl, setVideoCoverUrl] = useState("");
   const [videoCategory, setVideoCategory] = useState("new");
   const [videoSubCategory, setVideoSubCategory] = useState("");
   const [videoOrder, setVideoOrder] = useState("0");
@@ -385,7 +388,7 @@ export default function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from("videos")
-        .select("id, title, description, youtube_url, category, sub_category, display_order, created_at")
+        .select("*")
         .order("display_order", { ascending: true });
       if (error) {
         toast({ title: "تحذير – المرئيات", description: error.message, variant: "destructive" });
@@ -862,7 +865,7 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────
   function openCreateVideoModal() {
     setEditingVideo(null);
-    setVideoTitle(""); setVideoDescription(""); setVideoYoutubeUrl("");
+    setVideoTitle(""); setVideoDescription(""); setVideoYoutubeUrl(""); setVideoCoverUrl("");
     setVideoCategory("new"); setVideoSubCategory(""); setVideoOrder("0"); setVideoUrlError("");
     setVideoModalOpen(true);
   }
@@ -871,6 +874,7 @@ export default function AdminDashboard() {
     setVideoTitle(safeStr(video.title, ""));
     setVideoDescription(safeStr(video.description, ""));
     setVideoYoutubeUrl(safeStr(video.youtube_url, ""));
+    setVideoCoverUrl(safeStr(video.circular_cover_url || video.cover_url, ""));
     setVideoCategory(video.category ?? "new");
     setVideoSubCategory(safeStr(video.sub_category, ""));
     setVideoOrder(video.display_order != null ? String(video.display_order) : "0");
@@ -890,10 +894,12 @@ export default function AdminDashboard() {
       setVideoUrlError("الرابط غير صالح. يرجى لصق رابط يوتيوب صحيح."); return;
     }
     const orderNum = parseInt(videoOrder, 10);
-    const payload = {
+    const payload: Record<string, any> = {
       title: videoTitle.trim(),
       description: videoDescription.trim() || null,
       youtube_url: videoYoutubeUrl.trim(),
+      cover_url: videoCoverUrl.trim() || null,
+      circular_cover_url: videoCoverUrl.trim() || null,
       category: videoCategory,
       sub_category: videoSubCategory.trim() || null,
       display_order: isNaN(orderNum) ? 0 : orderNum,
@@ -901,11 +907,35 @@ export default function AdminDashboard() {
     setActionLoading(true);
     try {
       if (editingVideo) {
-        const { error } = await supabase.from("videos").update(payload).eq("id", editingVideo.id);
+        let { error } = await supabase.from("videos").update(payload).eq("id", editingVideo.id);
+        if (error && (error.message.includes("cover_url") || error.message.includes("circular_cover_url"))) {
+          const fallbackPayload = {
+            title: videoTitle.trim(),
+            description: videoDescription.trim() || null,
+            youtube_url: videoYoutubeUrl.trim(),
+            category: videoCategory,
+            sub_category: videoSubCategory.trim() || null,
+            display_order: isNaN(orderNum) ? 0 : orderNum,
+          };
+          const res = await supabase.from("videos").update(fallbackPayload).eq("id", editingVideo.id);
+          error = res.error;
+        }
         if (error) throw error;
         toast({ title: "✓ تم التحديث", description: "تم تحديث بيانات الفيديو." });
       } else {
-        const { error } = await supabase.from("videos").insert([payload]);
+        let { error } = await supabase.from("videos").insert([payload]);
+        if (error && (error.message.includes("cover_url") || error.message.includes("circular_cover_url"))) {
+          const fallbackPayload = {
+            title: videoTitle.trim(),
+            description: videoDescription.trim() || null,
+            youtube_url: videoYoutubeUrl.trim(),
+            category: videoCategory,
+            sub_category: videoSubCategory.trim() || null,
+            display_order: isNaN(orderNum) ? 0 : orderNum,
+          };
+          const res = await supabase.from("videos").insert([fallbackPayload]);
+          error = res.error;
+        }
         if (error) throw error;
         toast({ title: "✓ تم الإضافة", description: "تم إنشاء الفيديو بنجاح." });
       }
@@ -1928,22 +1958,29 @@ export default function AdminDashboard() {
                     </div>
                   ) : videos.map(vid => {
                     const vidId = extractYouTubeId(vid.youtube_url ?? "");
+                    const customCover = vid.circular_cover_url || vid.cover_url;
+                    const displayThumb = customCover || (vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null);
                     return (
                       <div key={vid.id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between">
                         <div>
-                          {vidId ? (
-                            <div className="relative aspect-video bg-black">
+                          <div className="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+                            {displayThumb ? (
                               <img
-                                src={`https://img.youtube.com/vi/${vidId}/mqdefault.jpg`}
+                                src={displayThumb}
                                 alt={safeStr(vid.title)}
                                 className="w-full h-full object-cover"
                               />
-                            </div>
-                          ) : (
-                            <div className="aspect-video bg-muted flex items-center justify-center text-foreground/40 text-xs">
-                              بدون معاينة
-                            </div>
-                          )}
+                            ) : (
+                              <div className="text-foreground/40 text-xs">
+                                بدون معاينة
+                              </div>
+                            )}
+                            {customCover && (
+                              <span className="absolute top-2 right-2 text-[9px] bg-emerald-600/90 text-white px-2 py-0.5 rounded-full font-bold shadow">
+                                غلاف دائري مخصص
+                              </span>
+                            )}
+                          </div>
                           <div className="p-4 space-y-2">
                             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
                               {getVideoCategoryLabel(vid.category)}
@@ -2523,22 +2560,69 @@ export default function AdminDashboard() {
                 }`}
                 style={{ direction: "ltr" }} />
               {videoUrlError && <p className="text-[10px] text-red-500">{videoUrlError}</p>}
-              {videoPreviewId && (
-                <div className="relative rounded-xl overflow-hidden aspect-video bg-black border border-border mt-1">
-                  <img
-                    src={`https://img.youtube.com/vi/${videoPreviewId}/maxresdefault.jpg`}
-                    alt="معاينة" className="w-full h-full object-cover opacity-70"
-                    onError={e => {
-                      (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoPreviewId}/mqdefault.jpg`;
-                    }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-10 h-10 bg-red-600/80 rounded-full flex items-center justify-center">
-                      <Youtube className="w-5 h-5 text-white" />
-                    </div>
+              {/* Dedicated Custom Circular Cover Field */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/40">
+                    رابط غلاف دائري مخصص (اختياري)
+                  </label>
+                  {videoCoverUrl ? (
+                    <span className="text-[9px] text-emerald-600 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-2.5 h-2.5" /> غلاف مخصص مفعل
+                    </span>
+                  ) : (
+                    <span className="text-[9px] text-foreground/40 font-light">
+                      تلقائي من يوتيوب إن تُرك فارغاً
+                    </span>
+                  )}
+                </div>
+                <Input
+                  type="url"
+                  value={videoCoverUrl}
+                  onChange={e => setVideoCoverUrl(e.target.value)}
+                  disabled={actionLoading}
+                  placeholder="https://... رابط صورة الغلاف الدائري المخصص"
+                  className="h-11 text-xs text-left font-mono bg-muted/30 border-border rounded-xl"
+                  style={{ direction: "ltr" }}
+                />
+              </div>
+
+              {/* Cover Preview (Custom Circular Cover or YouTube maxresdefault) */}
+              {(videoCoverUrl || videoPreviewId) && (
+                <div className="p-3 bg-muted/20 border border-border rounded-2xl flex items-center gap-3">
+                  <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 shadow-md bg-black border border-primary/20">
+                    <img
+                      src={
+                        videoCoverUrl ||
+                        (videoPreviewId
+                          ? `https://img.youtube.com/vi/${videoPreviewId}/maxresdefault.jpg`
+                          : "")
+                      }
+                      alt="معاينة الغلاف"
+                      className="w-full h-full object-cover"
+                      onError={e => {
+                        if (videoPreviewId) {
+                          (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoPreviewId}/mqdefault.jpg`;
+                        }
+                      }}
+                    />
                   </div>
-                  <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[9px] px-2 py-0.5 rounded-full">
-                    معاينة مباشرة
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-foreground">معاينة الغلاف الدائري</span>
+                      {videoCoverUrl ? (
+                        <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 font-semibold">
+                          غلاف مخصص
+                        </span>
+                      ) : (
+                        <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-500 font-semibold">
+                          يوتيوب تلقائي
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-foreground/50 truncate mt-0.5">
+                      {videoTitle.trim() || "عنوان الفيديو"}
+                    </p>
                   </div>
                 </div>
               )}
