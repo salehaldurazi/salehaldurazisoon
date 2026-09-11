@@ -49,13 +49,13 @@ export function Navigation() {
   };
 
   return (
-    <nav 
+    <nav
       className={cn(
         "fixed bottom-6 left-0 right-0 z-[110] flex items-center justify-center px-4",
         "animate-in slide-in-from-bottom-10 duration-700"
       )}
     >
-      <div 
+      <div
         className={cn(
           "w-full max-w-md flex items-center justify-between p-1 rounded-[2rem]",
           "bg-white/90 dark:bg-black/80 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)]",
@@ -68,8 +68,8 @@ export function Navigation() {
             onClick={() => handleNavClick(item.href)}
             className={cn(
               "flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-2xl transition-all duration-500 relative group min-w-0",
-              activeTab === item.href 
-                ? "text-primary scale-105" 
+              activeTab === item.href
+                ? "text-primary scale-105"
                 : "text-foreground/50 dark:text-foreground/40 hover:text-foreground scale-95"
             )}
           >
@@ -83,11 +83,11 @@ export function Navigation() {
             )}>
               {item.label}
             </span>
-            
+
             {activeTab === item.href && (
               <div className="absolute inset-x-1 inset-y-1 bg-primary/10 rounded-xl -z-10 animate-in fade-in zoom-in duration-500" />
             )}
-            
+
             <div className={cn(
               "absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full transition-all duration-500",
               activeTab === item.href ? "opacity-100 translate-y-0 shadow-[0_0_8px_#c5a059]" : "opacity-0 -translate-y-2"

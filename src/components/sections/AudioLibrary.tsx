@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../../lib/supabase-js";
 import { FadeInSection } from "../FadeInSection";
@@ -299,6 +299,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [expandedAlbumId]);
 
+  const searchBarRef = useRef<HTMLDivElement>(null);
   const isInitialMount = React.useRef(true);
 
   // Reset search query & folder view automatically when activeCategory changes
@@ -309,32 +310,29 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
     setExpandedAlbumId(null);
   }, [activeCategory]);
 
-  // Automatic smooth scroll-to-top ONLY when switching categories or navigating folders (NOT when opening/expanding albums)
+  // Smooth scroll target directly to search bar ONLY when switching categories or navigating folders (NOT when opening/expanding albums or tracks)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
 
-    const scrollToAudioTop = () => {
-      const audioSection = document.getElementById("audio");
-      if (audioSection) {
-        const navOffset = 70; // Navigation bar height offset
-        const elementTop =
-          audioSection.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop);
-        const targetScroll = Math.max(0, elementTop - navOffset);
+    const scrollToSearchBar = () => {
+      if (searchBarRef.current) {
+        // 20px top padding safe-area so search bar sits cleanly at the top of the viewport
+        const topOffset = 20;
+        const elementRect = searchBarRef.current.getBoundingClientRect();
+        const targetScroll = window.pageYOffset + elementRect.top - topOffset;
 
         window.scrollTo({
-          top: targetScroll,
+          top: Math.max(0, targetScroll),
           behavior: "smooth",
         });
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     };
 
     // Small delay to ensure DOM layout stabilizes across mobile and desktop
-    const timer = setTimeout(scrollToAudioTop, 40);
+    const timer = setTimeout(scrollToSearchBar, 40);
     return () => clearTimeout(timer);
   }, [activeCategory, currentFolderView]);
 
@@ -1508,7 +1506,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
 
         <div className="max-w-3xl mx-auto w-full space-y-6">
           {/* حقل البحث */}
-          <div className="relative group">
+          <div ref={searchBarRef} id="audio-search-bar" className="relative group scroll-mt-5 md:scroll-mt-6">
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40" />
             <Input
               placeholder="ابحث عن ألبوم ، أو قصيدة ..."
@@ -2329,7 +2327,7 @@ function AlbumGrid({
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.97, opacity: 0, y: 12 }}
                     transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                    className="pointer-events-auto relative w-full max-w-md h-auto max-h-full bg-card/95 dark:bg-black/95 border border-primary/20 backdrop-blur-3xl rounded-2xl md:rounded-3xl p-3.5 sm:p-5 overflow-hidden flex flex-col text-start shadow-2xl overscroll-contain cursor-default"
+                    className="pointer-events-auto relative w-full max-w-md h-auto max-h-full bg-card/95 dark:bg-black/95 border border-primary/20 backdrop-blur-3xl rounded-[36px] md:rounded-[44px] p-3.5 sm:p-5 overflow-hidden flex flex-col text-start shadow-2xl overscroll-contain cursor-default"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Modal Background Glow */}
