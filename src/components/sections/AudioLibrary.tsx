@@ -1175,12 +1175,12 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
                     </button>
                     <div className="flex flex-row flex-nowrap items-center gap-1.5 justify-end shrink-0 whitespace-nowrap">
                       {(track as any).status_label && (
-                        <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-primary/20 bg-primary/20 text-[9px] md:text-[10px] font-light leading-none text-primary shrink-0 whitespace-nowrap">
+                        <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-primary/20 bg-primary/20 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-primary shrink-0 whitespace-nowrap">
                           {(track as any).status_label}
                         </span>
                       )}
                       {(track.year || track.release_year) && (
-                        <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-zinc-400/80 shrink-0 whitespace-nowrap">
+                        <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-zinc-400/80 shrink-0 whitespace-nowrap">
                           {track.year || track.release_year}
                         </span>
                       )}
@@ -1201,15 +1201,15 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
 
                   {/* Bottom Section: Compact Inline Stats Container & Dropdown Menu */}
                   <div className="flex items-center justify-between gap-1 relative z-10 w-full" dir="rtl">
-                    <div className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1.5 md:gap-2 shrink-0 whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1">
-                        <Headphones className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                        <span>{(track.listens_count || 0).toLocaleString("en-US")}</span>
+                    <div className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1 md:gap-1.5 shrink-0 whitespace-nowrap">
+                      <div className="inline-flex items-center gap-0.5 md:gap-1">
+                        <Headphones className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                        <span className="pt-[1px] leading-none text-center font-normal tracking-tight">{(track.listens_count || 0).toLocaleString("en-US")}</span>
                       </div>
-                      <div className="w-px h-2 md:h-2.5 bg-foreground/15" />
-                      <div className="inline-flex items-center gap-1">
-                        <Download className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                        <span>{(track.downloads_count || 0).toLocaleString("en-US")}</span>
+                      <div className="w-px h-1.5 md:h-2 bg-foreground/15" />
+                      <div className="inline-flex items-center gap-0.5 md:gap-1">
+                        <Download className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                        <span className="pt-[1px] leading-none text-center font-normal tracking-tight">{(track.downloads_count || 0).toLocaleString("en-US")}</span>
                       </div>
                     </div>
 
@@ -1300,7 +1300,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
                           {track.title}
                         </h3>
                         {(track.year || track.release_year) && (
-                          <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-zinc-400/80 shrink-0 whitespace-nowrap">
+                          <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-zinc-400/80 shrink-0 whitespace-nowrap">
                             {track.year || track.release_year}
                           </span>
                         )}
@@ -1321,17 +1321,17 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
                   </div>
 
                   <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <div className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1.5 md:gap-2 shrink-0 whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1">
-                        <Headphones className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                        <span className="font-light text-foreground/70 dark:text-gray-300">
+                    <div className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1 md:gap-1.5 shrink-0 whitespace-nowrap">
+                      <div className="inline-flex items-center gap-0.5 md:gap-1">
+                        <Headphones className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                        <span className="pt-[1px] leading-none text-center font-normal tracking-tight text-foreground/70 dark:text-gray-300">
                           {(track.listens_count || 0).toLocaleString("en-US")}
                         </span>
                       </div>
-                      <div className="w-px h-2 md:h-2.5 bg-foreground/15" />
-                      <div className="inline-flex items-center gap-1">
-                        <Download className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                        <span className="font-light text-foreground/70 dark:text-gray-300">
+                      <div className="w-px h-1.5 md:h-2 bg-foreground/15" />
+                      <div className="inline-flex items-center gap-0.5 md:gap-1">
+                        <Download className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                        <span className="pt-[1px] leading-none text-center font-normal tracking-tight text-foreground/70 dark:text-gray-300">
                           {(track.downloads_count || 0).toLocaleString("en-US")}
                         </span>
                       </div>
@@ -2074,11 +2074,11 @@ function AlbumGrid({
                       </button>
                       <div className="flex flex-row flex-nowrap items-center gap-1.5 justify-end shrink-0 whitespace-nowrap">
                         {album.status_label && (
-                          <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-primary/20 bg-primary/20 text-[9px] md:text-[10px] font-light leading-none text-primary shrink-0 whitespace-nowrap">
+                          <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-primary/20 bg-primary/20 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-primary shrink-0 whitespace-nowrap">
                             {album.status_label}
                           </span>
                         )}
-                        <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-zinc-400/80 shrink-0 whitespace-nowrap">
+                        <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-zinc-400/80 shrink-0 whitespace-nowrap">
                           {album.year}
                         </span>
                       </div>
@@ -2097,15 +2097,15 @@ function AlbumGrid({
 
                     {/* Bottom Section: Compact Inline Stats Container & Expand Button */}
                     <div className="flex items-center justify-between gap-1 relative z-10 w-full" dir="rtl">
-                      <div className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1.5 md:gap-2 shrink-0 whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1">
-                          <Headphones className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                          <span>{totalListens.toLocaleString("en-US")}</span>
+                      <div className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1 md:gap-1.5 shrink-0 whitespace-nowrap">
+                        <div className="inline-flex items-center gap-0.5 md:gap-1">
+                          <Headphones className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                          <span className="pt-[1px] leading-none text-center font-normal tracking-tight">{totalListens.toLocaleString("en-US")}</span>
                         </div>
-                        <div className="w-px h-2 md:h-2.5 bg-foreground/15" />
-                        <div className="inline-flex items-center gap-1">
-                          <Download className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                          <span>{totalDownloads.toLocaleString("en-US")}</span>
+                        <div className="w-px h-1.5 md:h-2 bg-foreground/15" />
+                        <div className="inline-flex items-center gap-0.5 md:gap-1">
+                          <Download className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                          <span className="pt-[1px] leading-none text-center font-normal tracking-tight">{totalDownloads.toLocaleString("en-US")}</span>
                         </div>
                       </div>
 
@@ -2157,13 +2157,13 @@ function AlbumGrid({
                           <h3 className="text-xs sm:text-sm md:text-base font-bold tracking-tight mb-1 truncate text-foreground">
                             {album.title}
                           </h3>
-                          <div className="flex items-center gap-1.5 justify-start flex-wrap" dir="rtl">
+                          <div className="flex items-center gap-1.5 justify-start flex-wrap mt-1" dir="rtl">
                             {album.status_label && (
-                              <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-primary/20 bg-primary/20 text-[9px] md:text-[10px] font-light leading-none text-primary shrink-0 whitespace-nowrap">
+                              <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-primary/20 bg-primary/20 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-primary shrink-0 whitespace-nowrap">
                                 {album.status_label}
                               </span>
                             )}
-                            <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-zinc-400/80 shrink-0 whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-zinc-400/80 shrink-0 whitespace-nowrap">
                               {album.year}
                             </span>
                           </div>
@@ -2171,17 +2171,17 @@ function AlbumGrid({
                       </div>
 
                       {/* إحصائيات الألبوم الكلية */}
-                      <div className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1.5 md:gap-2 shrink-0 whitespace-nowrap self-center">
-                        <div className="inline-flex items-center gap-1">
-                          <Headphones className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                          <span className="font-light text-foreground/70 dark:text-gray-300">
+                      <div className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1 md:gap-1.5 shrink-0 whitespace-nowrap self-center">
+                        <div className="inline-flex items-center gap-0.5 md:gap-1">
+                          <Headphones className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                          <span className="pt-[1px] leading-none text-center font-normal tracking-tight text-foreground/70 dark:text-gray-300">
                             {totalListens.toLocaleString("en-US")}
                           </span>
                         </div>
-                        <div className="w-px h-2 md:h-2.5 bg-foreground/15" />
-                        <div className="inline-flex items-center gap-1">
-                          <Download className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                          <span className="font-light text-foreground/70 dark:text-gray-300">
+                        <div className="w-px h-1.5 md:h-2 bg-foreground/15" />
+                        <div className="inline-flex items-center gap-0.5 md:gap-1">
+                          <Download className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                          <span className="pt-[1px] leading-none text-center font-normal tracking-tight text-foreground/70 dark:text-gray-300">
                             {totalDownloads.toLocaleString("en-US")}
                           </span>
                         </div>
@@ -2370,23 +2370,23 @@ function AlbumGrid({
                           </h3>
                           {/* Sleek RTL flex row for Year, Status Label & Stats */}
                           <div className="flex items-center gap-1.5 flex-wrap mt-1" dir="rtl">
-                            <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-zinc-400/80 shrink-0 whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-zinc-400/80 shrink-0 whitespace-nowrap">
                               {selectedAlbumForGrid.year}
                             </span>
                             {selectedAlbumForGrid.status_label && (
-                              <span className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-primary/20 bg-primary/20 text-[9px] md:text-[10px] font-light leading-none text-primary shrink-0 whitespace-nowrap">
+                              <span className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 pt-[1px] rounded-full border border-primary/20 bg-primary/20 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-center text-primary shrink-0 whitespace-nowrap">
                                 {selectedAlbumForGrid.status_label}
                               </span>
                             )}
-                            <div className="inline-flex items-center justify-center h-5 md:h-6 px-2 md:px-2.5 rounded-full border border-foreground/10 bg-foreground/5 text-[9px] md:text-[10px] font-light leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1.5 md:gap-2 shrink-0 whitespace-nowrap">
-                              <div className="inline-flex items-center gap-1">
-                                <Headphones className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                                <span>{modalListens.toLocaleString("en-US")}</span>
+                            <div className="inline-flex items-center justify-center h-4 md:h-[18px] px-1.5 md:px-2 rounded-full border border-foreground/10 bg-foreground/5 text-[8px] md:text-[9px] font-normal tracking-tight leading-none text-foreground/70 dark:text-gray-300 backdrop-blur-sm gap-1 md:gap-1.5 shrink-0 whitespace-nowrap">
+                              <div className="inline-flex items-center gap-0.5 md:gap-1">
+                                <Headphones className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                                <span className="pt-[1px] leading-none text-center font-normal tracking-tight">{modalListens.toLocaleString("en-US")}</span>
                               </div>
-                              <div className="w-px h-2 md:h-2.5 bg-foreground/15" />
-                              <div className="inline-flex items-center gap-1">
-                                <Download className="w-2.5 h-2.5 md:w-3 md:h-3 text-primary shrink-0 opacity-80" />
-                                <span>{modalDownloads.toLocaleString("en-US")}</span>
+                              <div className="w-px h-1.5 md:h-2 bg-foreground/15" />
+                              <div className="inline-flex items-center gap-0.5 md:gap-1">
+                                <Download className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary shrink-0 opacity-80" />
+                                <span className="pt-[1px] leading-none text-center font-normal tracking-tight">{modalDownloads.toLocaleString("en-US")}</span>
                               </div>
                             </div>
                           </div>
