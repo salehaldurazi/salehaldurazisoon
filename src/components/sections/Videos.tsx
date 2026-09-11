@@ -108,35 +108,22 @@ export function Videos() {
   const [error, setError] = useState<string | null>(null);
 
   const titleRef = useRef<HTMLHeadingElement | null>(null);
-  const isInitialMount = useRef(true);
 
-  const scrollToTitle = useCallback(() => {
-    const element = titleRef.current;
-    if (element) {
-      // 20px - 24px minimal elegant breathing space right above "المرئيات"
-      const yOffset = -24;
-      const y = element.getBoundingClientRect().top + (typeof window !== "undefined" ? window.pageYOffset : 0) + yOffset;
-      window.scrollTo({
-        top: Math.max(0, y),
-        behavior: "smooth",
-      });
-    }
+  // Single, unified tab change and scroll handler across all category tabs
+  const handleTabChange = useCallback((category: string) => {
+    setActiveCategory(category);
+
+    // Allow React state & DOM layout to settle before calculating scroll position
+    requestAnimationFrame(() => {
+      const element = document.getElementById("videos-title") || titleRef.current;
+      if (element) {
+        const yOffset = -20; // Exact minimal breathing room above "المرئيات"
+        const currentScrollY = typeof window !== "undefined" ? (window.pageYOffset || window.scrollY || 0) : 0;
+        const y = element.getBoundingClientRect().top + currentScrollY + yOffset;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      }
+    });
   }, []);
-
-  // Smoothly scroll directly above the 'المرئيات' section title after state and DOM layout settle
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    // 50ms delay ensures tab transition has occurred and document height is settled
-    const timer = setTimeout(() => {
-      scrollToTitle();
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, [activeCategory, scrollToTitle]);
 
   const fetchVideos = useCallback(async () => {
     try {
@@ -214,9 +201,9 @@ export function Videos() {
       <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
       <div className="container max-w-6xl px-6 mx-auto relative z-10">
-        {/* Section Header with Ref for Pinpointed Scroll */}
+        {/* Section Header with Ref & ID for Unified Pinpointed Scroll */}
         <FadeInSection className="text-center mb-10 space-y-4">
-          <h2 ref={titleRef} className="text-4xl md:text-5xl font-light text-primary">المرئيات</h2>
+          <h2 id="videos-title" ref={titleRef} className="text-4xl md:text-5xl font-light text-primary">المرئيات</h2>
           <p className="text-primary uppercase text-xs">قسم خاص للمرئيات</p>
         </FadeInSection>
 
@@ -232,7 +219,7 @@ export function Videos() {
             <Tabs
               defaultValue="new"
               value={activeCategory}
-              onValueChange={setActiveCategory}
+              onValueChange={handleTabChange}
               className="w-full"
             >
               {/* Category Filter Tabs (Exact match with Audio Library dimensions) */}
@@ -242,6 +229,7 @@ export function Videos() {
                     <TabsTrigger
                       key={value}
                       value={value}
+                      onClick={() => handleTabChange(value)}
                       className="flex-1 rounded-full py-2.5 text-[11px] md:text-sm font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-foreground/5 whitespace-nowrap"
                     >
                       {label}
@@ -258,7 +246,7 @@ export function Videos() {
                   <TabsContent
                     key={value}
                     value={value}
-                    className="mt-0 min-h-[360px] sm:min-h-[420px] md:min-h-[500px] focus-visible:outline-none animate-in fade-in slide-in-from-bottom-4 duration-700"
+                    className="mt-0 min-h-[500px] focus-visible:outline-none animate-in fade-in slide-in-from-bottom-4 duration-700"
                   >
                     {categoryVideos.length === 0 ? (
                       <EmptyState
@@ -305,17 +293,17 @@ export function Videos() {
                                 )}
 
                                 {/* Bottom Gradient Overlay (Adaptive Light & Dark Modes) */}
-                                <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-white via-white/85 to-transparent dark:from-black dark:via-black/90 dark:to-transparent flex flex-col justify-end items-center pb-3.5 sm:pb-4 md:pb-5 pt-3 sm:pt-4 px-2.5 sm:px-3.5 md:px-4 text-center z-10">
+                                <div className="absolute inset-x-0 bottom-0 h-[68%] md:h-[65%] bg-gradient-to-t from-white via-white/90 to-transparent dark:from-black dark:via-black/90 dark:to-transparent flex flex-col justify-end items-center pb-2.5 sm:pb-4 md:pb-5 pt-3 sm:pt-4 px-2 sm:px-3 md:px-4 text-center z-10 gap-0.5 sm:gap-1">
                                   {/* 1. Category Badge: Soft semi-transparent frosted style */}
                                   {vid.sub_category && (
-                                    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm border border-primary/30 text-primary text-[8px] sm:text-[9px] font-semibold mb-1 tracking-wide shadow-sm">
+                                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-black/30 backdrop-blur-sm border border-primary/30 text-primary text-[7.5px] sm:text-[9px] font-semibold mb-0.5 sm:mb-1 tracking-wide shadow-sm h-auto">
                                       {vid.sub_category}
                                     </span>
                                   )}
 
                                   {/* 2. Video Title */}
                                   <h3
-                                    className="text-[11px] sm:text-xs md:text-sm font-bold text-foreground truncate max-w-[85%] leading-tight group-hover:text-primary transition-colors duration-300"
+                                    className="text-[10px] sm:text-xs md:text-sm font-bold text-foreground truncate max-w-[80%] leading-tight group-hover:text-primary transition-colors duration-300"
                                     title={vid.title ?? ""}
                                   >
                                     {vid.title ?? "بدون عنوان"}
@@ -323,14 +311,14 @@ export function Videos() {
 
                                   {/* 3. Year / Metadata */}
                                   {(formattedDate || vid.description) && (
-                                    <p className="text-[8.5px] sm:text-[9px] md:text-[10px] text-muted-foreground font-light mt-0.5 truncate max-w-[85%]">
+                                    <p className="text-[7.5px] sm:text-[9px] md:text-[10px] text-muted-foreground/80 leading-none mt-0.5 truncate max-w-[80%]">
                                       {formattedDate || vid.description}
                                     </p>
                                   )}
 
                                   {/* 4. Action Buttons (YouTube & Share Only) */}
                                   <div
-                                    className="flex items-center justify-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2"
+                                    className="flex items-center justify-center gap-1.5 sm:gap-2 mt-1 sm:mt-2"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     {/* YouTube Button */}
@@ -338,21 +326,21 @@ export function Videos() {
                                       href={watchUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 backdrop-blur-md hover:bg-primary/20 dark:hover:bg-primary/30 flex items-center justify-center transition-all cursor-pointer text-primary group/btn"
+                                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 backdrop-blur-md hover:bg-primary/20 dark:hover:bg-primary/30 flex items-center justify-center transition-all cursor-pointer text-primary group/btn"
                                       title="مشاهدة على يوتيوب"
                                       aria-label="مشاهدة على يوتيوب"
                                     >
-                                      <Youtube className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary group-hover/btn:scale-110 transition-transform" />
+                                      <Youtube className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-primary group-hover/btn:scale-110 transition-transform" />
                                     </a>
 
                                     {/* Share Button */}
                                     <button
                                       onClick={() => handleShare(vid.title, watchUrl)}
-                                      className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 backdrop-blur-md hover:bg-primary/20 dark:hover:bg-primary/30 flex items-center justify-center transition-all cursor-pointer text-primary group/btn"
+                                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/30 backdrop-blur-md hover:bg-primary/20 dark:hover:bg-primary/30 flex items-center justify-center transition-all cursor-pointer text-primary group/btn"
                                       title="مشاركة الفيديو"
                                       aria-label="مشاركة الفيديو"
                                     >
-                                      <Share2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary group-hover/btn:scale-110 transition-transform" />
+                                      <Share2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 text-primary group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                   </div>
                                 </div>

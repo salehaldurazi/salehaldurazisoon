@@ -148,7 +148,7 @@ export function Contact() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={loading}
-                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all outline-none text-foreground"
+                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
                   dir="rtl"
                 />
                 <Input
@@ -157,7 +157,7 @@ export function Contact() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
-                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all outline-none text-foreground"
+                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
                   dir="rtl"
                 />
               </div>
@@ -167,7 +167,7 @@ export function Contact() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 disabled={loading}
-                className="h-12 md:h-14 px-6 rounded-full bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all outline-none text-foreground"
+                className="h-12 md:h-14 px-6 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
                 dir="rtl"
               />
 
@@ -176,7 +176,7 @@ export function Contact() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 disabled={loading}
-                className="min-h-[140px] md:min-h-[160px] p-5 md:p-6 rounded-[28px] bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border/40 dark:border-white/10 focus:border-primary/50 focus-visible:ring-primary/20 focus-visible:ring-2 placeholder:text-muted-foreground/50 placeholder:font-light text-sm md:text-base text-right transition-all resize-none outline-none text-foreground"
+                className="min-h-[140px] md:min-h-[160px] px-6 py-4 md:py-5 rounded-[28px] md:rounded-3xl bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right resize-none outline-none"
                 dir="rtl"
               />
 
