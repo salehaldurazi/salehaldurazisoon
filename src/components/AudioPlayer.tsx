@@ -62,12 +62,23 @@ export function AudioPlayer({
 
     try {
       if (audioRef.current.paused) {
-        await audioRef.current.play();
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+        }
+        setIsPlaying(true);
+        if ("mediaSession" in navigator) {
+          navigator.mediaSession.playbackState = "playing";
+        }
       } else {
         audioRef.current.pause();
+        setIsPlaying(false);
+        if ("mediaSession" in navigator) {
+          navigator.mediaSession.playbackState = "paused";
+        }
       }
     } catch (error) {
-      console.error("فشل التحكم في التشغيل:", error);
+      console.warn("فشل التحكم في التشغيل:", error);
     }
   }, []);
 
@@ -154,8 +165,12 @@ export function AudioPlayer({
           if (audioRef.current) {
             try {
               await audioRef.current.play();
+              setIsPlaying(true);
+              if ("mediaSession" in navigator) {
+                navigator.mediaSession.playbackState = "playing";
+              }
             } catch (err) {
-              console.error("خطأ تشغيل MediaSession:", err);
+              console.warn("خطأ تشغيل MediaSession:", err);
             }
           }
         },
@@ -165,6 +180,10 @@ export function AudioPlayer({
         () => {
           if (audioRef.current) {
             audioRef.current.pause();
+            setIsPlaying(false);
+            if ("mediaSession" in navigator) {
+              navigator.mediaSession.playbackState = "paused";
+            }
           }
         },
       ],
@@ -233,12 +252,48 @@ export function AudioPlayer({
   useEffect(() => {
     if (track) {
       if (audioRef.current) {
-        audioRef.current.play().catch((e) => console.warn("تم حظر التشغيل التلقائي", e));
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+              if ("mediaSession" in navigator) {
+                navigator.mediaSession.playbackState = "playing";
+              }
+            })
+            .catch((e) => {
+              console.warn("تم حظر التشغيل التلقائي أو انتظار تفاعل المستخدم:", e);
+              setIsPlaying(false);
+            });
+        }
       }
       updateMediaSession();
       setIsMinimized(false);
     }
   }, [track, updateMediaSession]);
+
+  // Synchronize audio playback status after calls, system alarms, notifications, or lock-screen pauses
+  useEffect(() => {
+    const handleVisibilityOrFocus = () => {
+      if (!audioRef.current) return;
+      const isActuallyPlaying = !audioRef.current.paused && !audioRef.current.ended && audioRef.current.readyState > 1;
+      setIsPlaying(isActuallyPlaying);
+      if ("mediaSession" in navigator) {
+        navigator.mediaSession.playbackState = isActuallyPlaying ? "playing" : "paused";
+      }
+      updatePositionState();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("pageshow", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+      window.removeEventListener("pageshow", handlePageShow => handleVisibilityOrFocus);
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+    };
+  }, [updatePositionState]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -402,18 +457,47 @@ export function AudioPlayer({
         src={audioSrc}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={onNext}
         onPlay={() => {
           setIsPlaying(true);
           if ("mediaSession" in navigator) {
             navigator.mediaSession.playbackState = "playing";
           }
         }}
+        onPlaying={() => {
+          setIsPlaying(true);
+          if ("mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "playing";
+          }
+          updatePositionState();
+        }}
         onPause={() => {
           setIsPlaying(false);
           if ("mediaSession" in navigator) {
             navigator.mediaSession.playbackState = "paused";
           }
+        }}
+        onWaiting={() => {
+          setIsPlaying(false);
+        }}
+        onStalled={() => {
+          setIsPlaying(false);
+        }}
+        onCanPlay={() => {
+          updatePositionState();
+          if (audioRef.current && !audioRef.current.paused) {
+            setIsPlaying(true);
+          }
+        }}
+        onEnded={() => {
+          setIsPlaying(false);
+          if ("mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "none";
+          }
+          if (onNext) onNext();
+        }}
+        onError={(e) => {
+          console.warn("Audio element playback error:", e);
+          setIsPlaying(false);
         }}
         preload="auto"
       />
@@ -433,7 +517,7 @@ export function AudioPlayer({
           damping: 30,
           mass: 0.8,
         }}
-        className="w-full max-w-md relative overflow-hidden rounded-[36px] md:rounded-[44px] bg-card/90 dark:bg-black/90 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-[transform,height]"
+        className="w-full max-w-md relative overflow-hidden rounded-[32px] md:rounded-[28px] bg-card/90 dark:bg-black/90 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-[transform,height]"
       >
         <AnimatePresence mode="wait" initial={false}>
           {isMinimized ? (
@@ -555,12 +639,12 @@ export function AudioPlayer({
                     onValueChange={handleSliderChange}
                     className="cursor-pointer"
                   />
-                  <div className="flex items-center justify-between px-0.5 mt-1">
-                    <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
-                      {formatTime(currentTime)}
-                    </span>
+                  <div className="flex items-center justify-between px-0.5 mt-1" dir="rtl">
                     <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
                       {formatTime(duration)}
+                    </span>
+                    <span className="text-[8px] text-foreground/40 font-medium tabular-nums">
+                      {formatTime(currentTime)}
                     </span>
                   </div>
                 </div>
