@@ -107,25 +107,35 @@ export function Videos() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const titleRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
   const isInitialMount = useRef(true);
 
   const scrollToTitle = useCallback(() => {
-    if (titleRef.current) {
-      titleRef.current.scrollIntoView({
+    const element = titleRef.current;
+    if (element) {
+      // 20px - 24px minimal elegant breathing space right above "المرئيات"
+      const yOffset = -24;
+      const y = element.getBoundingClientRect().top + (typeof window !== "undefined" ? window.pageYOffset : 0) + yOffset;
+      window.scrollTo({
+        top: Math.max(0, y),
         behavior: "smooth",
-        block: "start",
       });
     }
   }, []);
 
-  // Smoothly scroll directly to the 'المرئيات' section title on category tab switch
+  // Smoothly scroll directly above the 'المرئيات' section title after state and DOM layout settle
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
-    scrollToTitle();
+
+    // 50ms delay ensures tab transition has occurred and document height is settled
+    const timer = setTimeout(() => {
+      scrollToTitle();
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [activeCategory, scrollToTitle]);
 
   const fetchVideos = useCallback(async () => {
@@ -186,7 +196,7 @@ export function Videos() {
   const handleShare = useCallback((title?: string | null, url?: string | null) => {
     const shareUrl = url || (typeof window !== "undefined" ? window.location.href : "");
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl).catch(() => {});
+      navigator.clipboard.writeText(shareUrl).catch(() => { });
     }
     toast({
       title: "تم نسخ الرابط",
@@ -197,20 +207,18 @@ export function Videos() {
   return (
     <section
       id="videos"
-      className="py-24 md:py-32 bg-background relative overflow-hidden"
+      className="py-24 md:py-32 min-h-[600px] md:min-h-[700px] bg-background relative overflow-hidden"
       dir="rtl"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
       <div className="container max-w-6xl px-6 mx-auto relative z-10">
-        {/* Pinpointed Section Title Target */}
-        <div ref={titleRef} className="scroll-mt-20 md:scroll-mt-24">
-          <FadeInSection className="text-center mb-10 space-y-4">
-            <h2 className="text-4xl md:text-5xl font-light text-primary">المرئيات</h2>
-            <p className="text-primary uppercase text-xs">قسم خاص للمرئيات</p>
-          </FadeInSection>
-        </div>
+        {/* Section Header with Ref for Pinpointed Scroll */}
+        <FadeInSection className="text-center mb-10 space-y-4">
+          <h2 ref={titleRef} className="text-4xl md:text-5xl font-light text-primary">المرئيات</h2>
+          <p className="text-primary uppercase text-xs">قسم خاص للمرئيات</p>
+        </FadeInSection>
 
         <div className="max-w-4xl mx-auto w-full mt-12">
           {loading ? (
@@ -250,7 +258,7 @@ export function Videos() {
                   <TabsContent
                     key={value}
                     value={value}
-                    className="mt-0 focus-visible:outline-none animate-in fade-in slide-in-from-bottom-4 duration-700"
+                    className="mt-0 min-h-[360px] sm:min-h-[420px] md:min-h-[500px] focus-visible:outline-none animate-in fade-in slide-in-from-bottom-4 duration-700"
                   >
                     {categoryVideos.length === 0 ? (
                       <EmptyState
@@ -265,20 +273,20 @@ export function Videos() {
                           const videoId = extractYouTubeId(vid.youtube_url);
                           const watchUrl =
                             vid.youtube_url ?? (videoId ? `https://www.youtube.com/watch?v=${videoId}` : "#");
-                          
+
                           // Custom circular cover or YouTube maxresdefault / hqdefault fallback
                           const customCover = vid.circular_cover_url || vid.cover_url;
                           const thumbnailUrl = customCover
                             ? customCover
                             : videoId
-                            ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-                            : null;
+                              ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+                              : null;
                           const formattedDate = formatArabicDate(vid.created_at);
 
                           return (
                             <FadeInSection key={vid.id} delay={idx * 100} className="shrink-0 flex justify-center">
-                              {/* 100% Seamless Circular Card: Scaled up, zero outer border or drop shadow */}
-                              <div className="w-[155px] sm:w-[185px] md:w-[225px] lg:w-[245px] aspect-square shrink-0 rounded-full overflow-hidden relative group transition-transform duration-500 hover:scale-[1.02] mx-auto">
+                              {/* Refined Subtle Golden Border & Warm Ambient Shadow */}
+                              <div className="w-[155px] sm:w-[185px] md:w-[225px] lg:w-[245px] aspect-square shrink-0 rounded-full overflow-hidden relative group border border-primary/25 hover:border-primary/50 transition-all duration-500 hover:scale-[1.02] mx-auto">
                                 {/* Cover Image Filling Full Circle */}
                                 {thumbnailUrl ? (
                                   <Image
