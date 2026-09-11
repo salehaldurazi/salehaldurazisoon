@@ -256,7 +256,7 @@ export function Videos() {
 
                           return (
                             <FadeInSection key={vid.id} delay={idx * 100}>
-                              <Card className="bg-card border border-border dark:border-white/10 hover:border-primary/40 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-xl sm:rounded-2xl dark:shadow-2xl h-full flex flex-col text-right">
+                              <Card className="bg-card border border-border dark:border-white/10 hover:border-primary/40 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-2xl md:rounded-3xl dark:shadow-2xl h-full flex flex-col text-right">
                                 <CardContent className="p-0 flex flex-col h-full">
 
                                   {/* 1. Video Thumbnail / Player Container */}

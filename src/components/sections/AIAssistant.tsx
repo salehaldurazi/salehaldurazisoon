@@ -69,7 +69,7 @@ export function AIAssistant() {
             <h3 className="text-center text-sm uppercase tracking-widest text-primary/60 mb-8">المقاطع المقترحة</h3>
             <div className="grid gap-6">
               {results.recitationSegments.map((seg, i) => (
-                <Card key={i} className="bg-card/50 border-primary/5 hover:border-primary/20 transition-all">
+                <Card key={i} className="bg-card/50 border-primary/5 hover:border-primary/20 transition-all rounded-2xl md:rounded-3xl overflow-hidden backdrop-blur-2xl">
                   <CardContent className="p-6 flex items-start space-x-6 space-x-reverse text-right">
                     <div className="pt-1">
                       <PlayCircle className="w-10 h-10 text-primary cursor-pointer hover:scale-110 transition-transform" />

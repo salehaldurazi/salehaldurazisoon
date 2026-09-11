@@ -433,7 +433,7 @@ export function AudioPlayer({
           damping: 30,
           mass: 0.8,
         }}
-        className="w-full max-w-md relative overflow-hidden rounded-[1.5rem] bg-card/90 dark:bg-black/90 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-[transform,height]"
+        className="w-full max-w-md relative overflow-hidden rounded-2xl md:rounded-3xl bg-card/90 dark:bg-black/90 backdrop-blur-3xl border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] will-change-[transform,height]"
       >
         <AnimatePresence mode="wait" initial={false}>
           {isMinimized ? (

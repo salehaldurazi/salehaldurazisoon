@@ -1130,7 +1130,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
                 className="flex"
               >
                 <Card className={cn(
-                  "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-xl sm:rounded-2xl md:rounded-[1.8rem] flex flex-col justify-between aspect-square p-2 sm:p-3.5 md:p-4 text-start items-start w-full relative",
+                  "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-2xl md:rounded-3xl flex flex-col justify-between aspect-square p-2 sm:p-3.5 md:p-4 text-start items-start w-full relative",
                   highlightedTrackId && String(highlightedTrackId) === String(track.id) &&
                   "ring-2 ring-primary border-primary/60 bg-primary/10 animate-pulse"
                 )} dir="rtl">
@@ -1253,7 +1253,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
             transition={{ duration: 0.3, delay: trackIdx < 8 ? trackIdx * 0.04 : 0 }}
           >
             <Card className={cn(
-              "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-[1.5rem] text-start",
+              "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-2xl md:rounded-3xl text-start",
               highlightedTrackId && String(highlightedTrackId) === String(track.id) &&
               "ring-2 ring-primary border-primary/60 bg-primary/10 animate-pulse"
             )} dir="rtl">
@@ -1748,7 +1748,7 @@ export function AudioLibrary({ onPlay, onAddToQueue }: AudioLibraryProps) {
                                   onClick={() => setCurrentFolderView(folder)}
                                   className="w-full text-start group h-full"
                                 >
-                                  <Card className="bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden backdrop-blur-2xl rounded-2xl sm:rounded-[2rem] cursor-pointer h-full">
+                                  <Card className="bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden backdrop-blur-2xl rounded-2xl md:rounded-3xl cursor-pointer h-full">
                                     <CardContent className="p-3 sm:p-5 flex items-center justify-between gap-2 sm:gap-4 h-full" dir="rtl">
                                       <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1">
                                         {/* Glowing gold icon (hidden on mobile < sm for maximum title space) */}
@@ -2042,7 +2042,7 @@ function AlbumGrid({
                   className="flex"
                 >
                   <Card className={cn(
-                    "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-xl sm:rounded-2xl md:rounded-[1.8rem] flex flex-col justify-between aspect-square p-2 sm:p-3.5 md:p-4 text-start items-start w-full relative",
+                    "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-2xl md:rounded-3xl flex flex-col justify-between aspect-square p-2 sm:p-3.5 md:p-4 text-start items-start w-full relative",
                     highlightedAlbumId && String(highlightedAlbumId) === String(album.id) && !highlightedTrackId &&
                     "ring-2 ring-primary border-primary/60 bg-primary/10 animate-pulse"
                   )} dir="rtl">
@@ -2124,7 +2124,7 @@ function AlbumGrid({
                 }}
               >
                 <Card className={cn(
-                  "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-[2rem] text-start",
+                  "bg-card/40 border-primary/10 hover:border-primary/30 transition-all duration-500 overflow-hidden group backdrop-blur-2xl rounded-2xl md:rounded-3xl text-start",
                   highlightedAlbumId && String(highlightedAlbumId) === String(album.id) && !highlightedTrackId &&
                   "ring-2 ring-primary border-primary/60 bg-primary/10 animate-pulse"
                 )} dir="rtl">
@@ -2329,7 +2329,7 @@ function AlbumGrid({
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.97, opacity: 0, y: 12 }}
                     transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                    className="pointer-events-auto relative w-full max-w-md h-auto max-h-full bg-card/95 dark:bg-black/95 border border-primary/20 backdrop-blur-3xl rounded-[1.5rem] p-3.5 sm:p-5 overflow-hidden flex flex-col text-start shadow-2xl overscroll-contain cursor-default"
+                    className="pointer-events-auto relative w-full max-w-md h-auto max-h-full bg-card/95 dark:bg-black/95 border border-primary/20 backdrop-blur-3xl rounded-2xl md:rounded-3xl p-3.5 sm:p-5 overflow-hidden flex flex-col text-start shadow-2xl overscroll-contain cursor-default"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Modal Background Glow */}
