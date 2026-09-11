@@ -148,7 +148,7 @@ export function Contact() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={loading}
-                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
+                  className="h-11 md:h-12 px-5 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-xs md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
                   dir="rtl"
                 />
                 <Input
@@ -157,7 +157,7 @@ export function Contact() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
-                  className="h-12 md:h-14 px-6 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
+                  className="h-11 md:h-12 px-5 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-xs md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
                   dir="rtl"
                 />
               </div>
@@ -167,7 +167,7 @@ export function Contact() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 disabled={loading}
-                className="h-12 md:h-14 px-6 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
+                className="h-11 md:h-12 px-5 rounded-full bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-xs md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right outline-none"
                 dir="rtl"
               />
 
@@ -176,14 +176,14 @@ export function Contact() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 disabled={loading}
-                className="min-h-[140px] md:min-h-[160px] px-6 py-4 md:py-5 rounded-[28px] md:rounded-3xl bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-base md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right resize-none outline-none"
+                className="min-h-[120px] md:min-h-[140px] px-5 py-3.5 rounded-[22px] bg-card/40 border border-primary/10 focus:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 placeholder:text-muted-foreground/60 placeholder:font-light text-xs md:text-sm font-light text-foreground transition-all backdrop-blur-sm text-right resize-none outline-none"
                 dir="rtl"
               />
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] h-12 md:h-14 rounded-full font-bold transition-all duration-300 text-xs md:text-sm mt-2 flex items-center justify-center gap-2 group/submit shadow-lg shadow-primary/10 cursor-pointer"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] h-11 md:h-12 rounded-full font-bold transition-all duration-300 text-xs md:text-sm mt-2 flex items-center justify-center gap-2 group/submit shadow-lg shadow-primary/10 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -192,7 +192,7 @@ export function Contact() {
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 group-hover/submit:-translate-x-1 transition-transform duration-300" />
+                    <Send className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover/submit:-translate-x-1 transition-transform duration-300" />
                     <span>إرسال الرسالة</span>
                   </>
                 )}
